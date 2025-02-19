@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-web-app-ingress
+  namespace: web-app
+  annotations:
+    alb.ingress.kubernetes.io/scheme: "internet-facing"  
+    alb.ingress.kubernetes.io/target-type: ip    
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'  
+    alb.ingress.kubernetes.io/group.name: "my-web-app-group"
+    # Add these new annotations
+    alb.ingress.kubernetes.io/subnets: subnet-0cd219d86faee1fef,subnet-018cbabcbaf2aadb1  # Replace with your public subnet IDs
+    alb.ingress.kubernetes.io/security-groups: sg-01e205571dc6556bd  # Replace with your security group ID
+spec:
+  ingressClassName: alb
+  rules:
+    - host:   
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: my-web-app-svc
+                port:
+                  number: 5000
